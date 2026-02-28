@@ -1,4 +1,4 @@
-import "./css/style.css";
+import './css/style.css';
 
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -36,7 +36,6 @@ form.addEventListener('submit', async e => {
     showLoader();
 
     const data = await getImagesByQuery(currentQuery, currentPage);
-
     totalHits = data.totalHits;
 
     if (data.hits.length === 0) {
@@ -50,8 +49,16 @@ form.addEventListener('submit', async e => {
 
     createGallery(data.hits);
 
-    if (totalHits > 15) {
+    const totalPages = Math.ceil(totalHits / 15);
+
+    if (totalPages > 1) {
       showLoadMoreButton();
+    } else {
+      hideLoadMoreButton();
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
     }
   } catch (error) {
     iziToast.error({
@@ -71,15 +78,14 @@ loadMoreBtn.addEventListener('click', async () => {
     hideLoadMoreButton();
 
     const data = await getImagesByQuery(currentQuery, currentPage);
-
     createGallery(data.hits);
 
     const totalPages = Math.ceil(totalHits / 15);
 
     if (currentPage >= totalPages) {
+      hideLoadMoreButton();
       iziToast.info({
-        message:
-          "We're sorry, but you've reached the end of search results.",
+        message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
     } else {
